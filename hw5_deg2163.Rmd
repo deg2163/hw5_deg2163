@@ -81,3 +81,35 @@ tidy_problem_1_df %>%
 Comment on differences between groups: 
 
 * In the control group, the trend seems to remain at the same levels meanwhile the experimental groups shows observations increasing. Additionally, the experimental groups seems to have higher observation by week 8 in comparison to week 8 in the control group. Overall, the observations in the experimental group seem to be higher in comparison to the control group. 
+
+
+###**Problem 2**
+
+Describe the raw data: 
+
+```{r}
+## Import data 
+homicide_data = 
+  read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(city_state = paste(city, state, sep = ", "))
+  
+```
+
+Total number of homicides
+```{r}
+homicide_data %>% 
+  group_by(city_state) %>% 
+  summarize(total_num_homicides = n()) %>% 
+  knitr::kable()
+```
+
+Number of unsolved homicides
+```{r}
+homicide_data %>% 
+  filter(disposition == "Closed without arrest" | disposition == "Open/No arrest") %>% 
+  group_by(city_state) %>% 
+  summarize(num_unsolved_homicides = n()) %>% 
+  knitr::kable()
+```
+
