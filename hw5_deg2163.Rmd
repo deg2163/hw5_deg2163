@@ -6,10 +6,9 @@ output: github_document
 ---
 
 ```{r setup}
+## Loading the packages
 library(tidyverse)
 library(rvest)
-
-set.seed(1)
 
 knitr::opts_chunk$set(
   fig.width = 10,
@@ -54,6 +53,7 @@ problem_1_df %>%
 
 Creating a spaghetti plot: 
 ```{r}
+## Creating a spaghetti plot 
 tidy_problem_1_df %>% 
   group_by(id) %>% 
   ggplot(aes(x = week, y = score, color = id)) + 
@@ -86,7 +86,7 @@ homicide_data =
   mutate(city_state = paste(city, state, sep = ", "))
 ```
 
-Total number of homicides
+Total number of homicides by city
 ```{r}
 total_num_homicides_df = 
 homicide_data %>% 
@@ -94,7 +94,7 @@ homicide_data %>%
   summarize(total_num_homicides = n()) 
 ```
 
-Number of unsolved homicides
+Number of unsolved homicides by city
 ```{r}
 num_unsolved_homicides_df = 
 homicide_data %>% 
@@ -104,17 +104,20 @@ homicide_data %>%
 ```
 
 ```{r}
+## Left join to combine both data frame  
 all_df = 
   left_join(num_unsolved_homicides_df, total_num_homicides_df, by = "city_state")
 ```
 
 ```{r}
+## Function for the proportion of unsolved cases 
 prop_function = function(x,y) {
     prop.test(x = x,n = y) %>% 
     broom::tidy() %>% 
     select(estimate, conf.low, conf.high)
 }
 
+## Creating a data frame by mapping 
 homicides_total = 
   map2(.x = all_df$num_unsolved_homicides, 
        .y = all_df$total_num_homicides,
@@ -128,6 +131,7 @@ homicides_total =
 Making a plot for the propotion of homicides
 
 ```{r}
+## Create a plot with error bars 
 homicides_total %>% 
   mutate(city_state = fct_reorder(city_state, estimate)) %>% 
   ggplot(aes(x = city_state, y = estimate, color = city_state)) + 
