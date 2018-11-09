@@ -28,7 +28,7 @@ Create a tidy dataframe containing data from all participants, including the sub
 
 Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
 Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
-```{r problem_1}
+```{r problem_1, include = FALSE}
 
 ## Using functions and mapping to pull in data from different files 
 list_path = list.files(path = "./data", full.names = TRUE) 
@@ -64,6 +64,15 @@ Make a spaghetti plot showing observations on each subject over time, and commen
 
 ```{r}
 tidy_problem_1_df %>% 
-  ggplot()
+  ggplot(aes(x = week, y = score)) + 
+  geom_line() + 
+  facet_grid(~arm) + 
+  labs(
+    title = "Average Max Temperature in January and July in Each Station Across Years",
+    x = "Year",
+    y = "Average Max Temperature",
+    caption = "Data from the nyoaa dataset"
+  ) + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) 
 ```
 
