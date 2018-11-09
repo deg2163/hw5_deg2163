@@ -46,6 +46,15 @@ path_names =
 
 problem_1_df = 
   map_df(path_names, bind_rows)
-  
+```
+
+```{r}
+#Tidying the data
+tidy_problem_1_df = 
+problem_1_df %>% 
+  gather(key = "week", value = "score", week_1:week_8) %>% 
+  mutate(week = as.numeric(str_extract(week, "\\d"))) %>% 
+  separate(id, into = c("arm","id"), sep = "_") %>% 
+  mutate(id = str_replace(id, ".csv", ""))
 ```
 
