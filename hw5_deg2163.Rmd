@@ -76,8 +76,6 @@ Comment on differences between groups:
 
 ###**Problem 2**
 
-Describe the raw data: 
-
 ```{r}
 ## Import data 
 homicide_data = 
@@ -85,6 +83,8 @@ homicide_data =
   janitor::clean_names() %>% 
   mutate(city_state = paste(city, state, sep = ", "))
 ```
+
+Description of the raw data: The dataset gives you person information regarding all reported homicide in 50 major cities throughout the United States including first name, last name, race, age, and sex. The location information provides is city, state, longitude, and latitude information. Lastly, it includes information on the status of the case (i.e., open/no Arrest, Closed without arrest, or closed by arrest). Overall there are `r nrow(homicide_data)` reported cases and `r ncol(homicide_data)` variables in the dataset. 
 
 Total number of homicides by city
 ```{r}
@@ -107,6 +107,32 @@ homicide_data %>%
 ## Left join to combine both data frame  
 all_df = 
   left_join(num_unsolved_homicides_df, total_num_homicides_df, by = "city_state")
+```
+
+Estimate the proportion of homicides that are unsolved for Baltimore, MD
+```{r}
+## Homicides for baltimore 
+homicide_baltimore = 
+  all_df %>% 
+  filter(city_state == "Baltimore, MD")
+
+## Creating a function for Baltimore, MD
+prop_baltimore_function = function(num_unsolved_homicides,total_num_homicides) {
+    prop.test(x = num_unsolved_homicides,
+              n = total_num_homicides) %>% 
+    broom::tidy() %>% 
+    select(estimate, conf.low, conf.high)
+}
+
+# Estimate the proportion of homicides that are unsolved for Baltimore, MD
+baltimore_prop = 
+  map2(.x = homicide_baltimore$num_unsolved_homicides, 
+       .y = homicide_baltimore$total_num_homicides,
+       ~prop_baltimore_function(.x, .y)) %>% 
+  bind_rows() %>% 
+  bind_cols(homicide_baltimore) %>% 
+  janitor::clean_names() %>% 
+  select(city_state, num_unsolved_homicides, total_num_homicides, estimate, conf_low, conf_high)
 ```
 
 ```{r}
