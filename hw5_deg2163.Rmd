@@ -64,15 +64,22 @@ Make a spaghetti plot showing observations on each subject over time, and commen
 
 ```{r}
 tidy_problem_1_df %>% 
-  ggplot(aes(x = week, y = score)) + 
-  geom_line() + 
+  group_by(id) %>% 
+  ggplot(aes(x = week, y = score, color = id)) + 
+  geom_line() + geom_point() + 
   facet_grid(~arm) + 
   labs(
-    title = "Average Max Temperature in January and July in Each Station Across Years",
-    x = "Year",
-    y = "Average Max Temperature",
+    title = "Spaghetti plot showing observations over times",
+    x = "Week",
+    y = "Observation",
     caption = "Data from the nyoaa dataset"
   ) + 
-  theme(axis.text.x = element_text(angle = 60, hjust = 1)) 
+  viridis::scale_color_viridis(
+    name = "ID", 
+    discrete = TRUE) + 
+  theme_bw()
 ```
 
+Comment on differences betwee groups: 
+
+* In the control group, the trend seems to remain at the same levels meanwhile the experimental groups shows observations increasing. Additionally, the experimental groups seems to have higher observation by week 8 in comparison to week 8 in the control group. Overall, the observations in the experimental group seem to be higher in comparison to the control group. 
